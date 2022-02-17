@@ -29,7 +29,7 @@ public class Main {
 
         ActorsMoviesService actorsMoviesService = new ActorsMoviesService(actorsRepository,moviesRepository, actorToMovieRepository);
         actorsMoviesService.insertMovieWithActors("Titanic", LocalDate.parse("1997-12-11"), List.of("Leonardo DiCaprio", "Kate Winslet"));
-        actorsMoviesService.insertMovieWithActors("Great Garsby", LocalDate.parse("2012-07-23"), List.of("Tobey Maguire", "Leonardo DiCaprio"));
+        actorsMoviesService.insertMovieWithActors("Great Gatsby", LocalDate.parse("2012-07-23"), List.of("Tobey Maguire", "Leonardo DiCaprio"));
 
         System.out.println(moviesRepository.fetchMovies());
         System.out.println(actorsRepository.fetchActorByName("Leonardo DiCaprio"));
