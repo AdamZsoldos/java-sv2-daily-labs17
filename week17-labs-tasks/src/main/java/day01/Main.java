@@ -29,6 +29,8 @@ public class Main {
         System.out.println(actorsRepository.findActorsByPrefix("j"));
         System.out.println(actorsRepository.findActorsByPrefix("ji"));
         System.out.println(actorsRepository.findActorsByPrefix("o"));
+        System.out.println(actorsRepository.fetchActorByName("Jane Roe"));
+        System.out.println(actorsRepository.fetchActorByName("Jane Roe_"));
 
         MoviesRepository moviesRepository = new MoviesRepository(dataSource);
         moviesRepository.saveMovie("Titanic", LocalDate.of(1997, 12, 11));
