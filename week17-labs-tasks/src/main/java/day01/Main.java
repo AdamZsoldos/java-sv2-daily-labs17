@@ -19,16 +19,20 @@ public class Main {
         }
 
         Flyway flyway = Flyway.configure().dataSource(dataSource).load();
+        flyway.clean();
         flyway.migrate();
 
         ActorsRepository actorsRepository = new ActorsRepository(dataSource);
-        //actorsRepository.saveActor("Jill Poe");
+        actorsRepository.insertActor(new Actor(1, "Jill Poe"));
+        actorsRepository.insertActor(new Actor(2, "John Doe"));
+        actorsRepository.insertActor(new Actor(3, "Jane Roe"));
         System.out.println(actorsRepository.findActorsByPrefix("j"));
-        System.out.println(actorsRepository.findActorsByPrefix("jo"));
+        System.out.println(actorsRepository.findActorsByPrefix("ji"));
         System.out.println(actorsRepository.findActorsByPrefix("o"));
 
         MoviesRepository moviesRepository = new MoviesRepository(dataSource);
-        //moviesRepository.saveMovie("Titanic", LocalDate.of(1997, 12, 11));
+        moviesRepository.saveMovie("Titanic", LocalDate.of(1997, 12, 11));
+        moviesRepository.saveMovie("The Thing", LocalDate.of(1982, 5, 5));
         System.out.println(moviesRepository.fetchMovies());
     }
 }
