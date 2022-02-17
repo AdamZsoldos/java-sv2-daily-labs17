@@ -30,11 +30,11 @@ public class Main {
         System.out.println(actorsRepository.findActorsByPrefix("ji"));
         System.out.println(actorsRepository.findActorsByPrefix("o"));
         System.out.println(actorsRepository.fetchActorByName("Jane Roe"));
-        System.out.println(actorsRepository.fetchActorByName("Jane Roe_"));
+        System.out.println(actorsRepository.fetchActorByName("Jane Ro"));
 
         MoviesRepository moviesRepository = new MoviesRepository(dataSource);
-        moviesRepository.saveMovie("Titanic", LocalDate.of(1997, 12, 11));
-        moviesRepository.saveMovie("The Thing", LocalDate.of(1982, 5, 5));
+        moviesRepository.insertMovie("Titanic", LocalDate.of(1997, 12, 11));
+        moviesRepository.insertMovie("The Thing", LocalDate.of(1982, 5, 5));
         System.out.println(moviesRepository.fetchMovies());
     }
 }

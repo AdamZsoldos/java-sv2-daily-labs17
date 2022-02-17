@@ -14,7 +14,7 @@ public class MoviesRepository {
         this.dataSource = dataSource;
     }
 
-    public void saveMovie(String title, LocalDate releaseDate) {
+    public void insertMovie(String title, LocalDate releaseDate) {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement statement =
