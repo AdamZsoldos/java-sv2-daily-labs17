@@ -14,7 +14,7 @@ public class ActorsRepository {
         this.dataSource = dataSource;
     }
 
-    public long insertActor(Actor actor) {
+    public long insertActor(String name) {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(
@@ -22,7 +22,7 @@ public class ActorsRepository {
                         Statement.RETURN_GENERATED_KEYS
                 )
         ) {
-            statement.setString(1, actor.getName());
+            statement.setString(1, name);
             statement.executeUpdate();
             return getGeneratedKeyFromStatement(statement);
         } catch (SQLException e) {

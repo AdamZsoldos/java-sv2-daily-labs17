@@ -23,9 +23,9 @@ public class Main {
         flyway.migrate();
 
         ActorsRepository actorsRepository = new ActorsRepository(dataSource);
-        actorsRepository.insertActor(new Actor(1, "Jill Poe"));
-        actorsRepository.insertActor(new Actor(2, "John Doe"));
-        actorsRepository.insertActor(new Actor(3, "Jane Roe"));
+        actorsRepository.insertActor("Jill Poe");
+        actorsRepository.insertActor("John Doe");
+        actorsRepository.insertActor("Jane Roe");
         System.out.println(actorsRepository.findActorsByPrefix("j"));
         System.out.println(actorsRepository.findActorsByPrefix("ji"));
         System.out.println(actorsRepository.findActorsByPrefix("o"));
