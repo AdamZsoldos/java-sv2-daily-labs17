@@ -14,15 +14,21 @@ public class MoviesRepository {
         this.dataSource = dataSource;
     }
 
-    public void insertMovie(String title, LocalDate releaseDate) {
+    public long insertMovie(String title, LocalDate releaseDate) {
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement statement =
-                        connection.prepareStatement("insert into movies(title, release_date) values (?, ?)")
+                PreparedStatement statement = connection.prepareStatement(
+                        "insert into movies(title, release_date) values (?, ?)",
+                        Statement.RETURN_GENERATED_KEYS
+                )
         ) {
             statement.setString(1, title);
             statement.setDate(2, Date.valueOf(releaseDate));
             statement.executeUpdate();
+            try (ResultSet rs = statement.getGeneratedKeys()) {
+                if (rs.next()) return rs.getLong(1);
+                throw new IllegalStateException("No key has been generated");
+            }
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot connect", e);
         }

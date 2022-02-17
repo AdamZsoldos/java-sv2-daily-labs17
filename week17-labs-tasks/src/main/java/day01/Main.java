@@ -5,6 +5,7 @@ import org.mariadb.jdbc.MariaDbDataSource;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List;
 
 public class Main {
 
@@ -23,18 +24,16 @@ public class Main {
         flyway.migrate();
 
         ActorsRepository actorsRepository = new ActorsRepository(dataSource);
-        actorsRepository.insertActor("Jill Poe");
-        actorsRepository.insertActor("John Doe");
-        actorsRepository.insertActor("Jane Roe");
-        System.out.println(actorsRepository.findActorsByPrefix("j"));
-        System.out.println(actorsRepository.findActorsByPrefix("ji"));
-        System.out.println(actorsRepository.findActorsByPrefix("o"));
-        System.out.println(actorsRepository.fetchActorByName("Jane Roe"));
-        System.out.println(actorsRepository.fetchActorByName("Jane Ro"));
-
         MoviesRepository moviesRepository = new MoviesRepository(dataSource);
-        moviesRepository.insertMovie("Titanic", LocalDate.of(1997, 12, 11));
-        moviesRepository.insertMovie("The Thing", LocalDate.of(1982, 5, 5));
+        ActorToMovieRepository actorToMovieRepository = new ActorToMovieRepository(dataSource);
+
+        ActorsMoviesService actorsMoviesService = new ActorsMoviesService(actorsRepository,moviesRepository, actorToMovieRepository);
+        actorsMoviesService.insertMovieWithActors("Titanic", LocalDate.parse("1997-12-11"), List.of("Leonardo DiCaprio", "Kate Winslet"));
+        actorsMoviesService.insertMovieWithActors("Great Garsby", LocalDate.parse("2012-07-23"), List.of("Tobey Maguire", "Leonardo DiCaprio"));
+
         System.out.println(moviesRepository.fetchMovies());
+        System.out.println(actorsRepository.fetchActorByName("Leonardo DiCaprio"));
+        System.out.println(actorsRepository.fetchActorByName("Leonardo DiCapri"));
+        System.out.println(actorsRepository.findActorsByPrefix("k"));
     }
 }
