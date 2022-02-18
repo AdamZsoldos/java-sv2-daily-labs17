@@ -95,6 +95,27 @@ public class SqlQuery implements AutoCloseable {
         return result;
     }
 
+    public long fetchKeyLong() throws SQLException {
+        if (fetchKeys().next()) {
+            return result.getLong(1);
+        }
+        throw noKeyException();
+    }
+
+    public int fetchKeyInt() throws SQLException {
+        if (fetchKeys().next()) {
+            return result.getInt(1);
+        }
+        throw noKeyException();
+    }
+
+    public short fetchKeyShort() throws SQLException {
+        if (fetchKeys().next()) {
+            return result.getShort(1);
+        }
+        throw noKeyException();
+    }
+
     public void setParams(SqlParam... params) throws SQLException {
         validateStatementNotNull();
         for (SqlParam param : params) {
@@ -129,5 +150,9 @@ public class SqlQuery implements AutoCloseable {
         if (statement == null) {
             throw new IllegalStateException("Statement is null");
         }
+    }
+
+    private IllegalStateException noKeyException() {
+        return new IllegalStateException("No key generated");
     }
 }

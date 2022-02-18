@@ -19,15 +19,10 @@ public class MoviesRepository {
     }
 
     public long insertMovie(String title, LocalDate releaseDate) {
-        try (SqlQuery query = new SqlQuery(dataSource.getConnection())) {
-            query.setStatement(query.connection().prepareStatement(
-                    "insert into movies(title, release_date) values (?, ?)", Statement.RETURN_GENERATED_KEYS));
-            query.statement().setString(1, title);
-            query.statement().setDate(2, Date.valueOf(releaseDate));
-            query.statement().executeUpdate();
-            query.setResult(query.statement().getGeneratedKeys());
-            if (query.result().next()) return query.result().getLong(1);
-            else throw new IllegalStateException("No key has been generated");
+        try (SqlQuery query = new SqlQuery(dataSource.getConnection(),
+                "insert into movies(title, release_date) values (?, ?)", Statement.RETURN_GENERATED_KEYS,
+                SqlParam.of(1, title), SqlParam.of(2, releaseDate))) {
+            return query.fetchKeyLong();
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot insert movie", e);
         }
