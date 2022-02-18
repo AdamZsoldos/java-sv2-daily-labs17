@@ -14,6 +14,18 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public LocalDate getReleaseDate() {
+        return releaseDate;
+    }
+
     @Override
     public String toString() {
         return "Movie{" +

@@ -26,10 +26,22 @@ public class Main {
         ActorsRepository actorsRepository = new ActorsRepository(dataSource);
         MoviesRepository moviesRepository = new MoviesRepository(dataSource);
         ActorToMovieRepository actorToMovieRepository = new ActorToMovieRepository(dataSource);
+        RatingsRepository ratingsRepository = new RatingsRepository(dataSource);
 
         ActorsMoviesService actorsMoviesService = new ActorsMoviesService(actorsRepository,moviesRepository, actorToMovieRepository);
-        actorsMoviesService.insertMovieWithActors("Titanic", LocalDate.parse("1997-12-11"), List.of("Leonardo DiCaprio", "Kate Winslet"));
-        actorsMoviesService.insertMovieWithActors("Great Gatsby", LocalDate.parse("2012-07-23"), List.of("Tobey Maguire", "Leonardo DiCaprio"));
+        actorsMoviesService.addMovieWithActors("Titanic", LocalDate.parse("1997-12-11"), List.of("Leonardo DiCaprio", "Kate Winslet"));
+        actorsMoviesService.addMovieWithActors("Great Gatsby", LocalDate.parse("2012-07-23"), List.of("Tobey Maguire", "Leonardo DiCaprio"));
+
+        MoviesRatingsService moviesRatingsService = new MoviesRatingsService(moviesRepository, ratingsRepository);
+        moviesRatingsService.addRatingsByTitle("Titanic", 5, 2);
+        try {
+            moviesRatingsService.addRatingsByTitle("Great Gatsby", 1, 4, 6);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+        moviesRatingsService.addRatingsByTitle("Great Gatsby", 1, 4);
+        System.out.println(moviesRatingsService.getRatingsByTitle("Titanic"));
+        System.out.println(moviesRatingsService.getRatingsByTitle("Great Gatsby"));
 
         System.out.println(moviesRepository.fetchMovies());
         System.out.println(actorsRepository.fetchActorByName("Leonardo DiCaprio"));

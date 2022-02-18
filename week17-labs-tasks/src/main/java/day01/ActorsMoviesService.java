@@ -2,7 +2,6 @@ package day01;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public class ActorsMoviesService {
 
@@ -16,7 +15,7 @@ public class ActorsMoviesService {
         this.actorToMovieRepository = actorToMovieRepository;
     }
 
-    public void insertMovieWithActors(String title, LocalDate releaseDate, List<String> actorNames) {
+    public void addMovieWithActors(String title, LocalDate releaseDate, List<String> actorNames) {
         long movieId = moviesRepository.insertMovie(title, releaseDate);
         for (String actorName : actorNames) {
             long actorId = actorsRepository.fetchActorByName(actorName)
@@ -24,5 +23,9 @@ public class ActorsMoviesService {
                     .orElseGet(() -> actorsRepository.insertActor(actorName));
             actorToMovieRepository.insertActorAndMovieId(actorId, movieId);
         }
+    }
+
+    public void getMovieById(long movieId) {
+
     }
 }
