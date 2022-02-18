@@ -31,7 +31,7 @@ public class RatingsRepository {
             }
             query.connection().commit();
         } catch (SQLException e) {
-            throw new IllegalStateException("Cannot insert", e);
+            throw new IllegalStateException("Cannot insert rating", e);
         }
     }
 
@@ -47,7 +47,7 @@ public class RatingsRepository {
             }
             return ratings;
         } catch (SQLException e) {
-            throw new IllegalStateException("Cannot fetch", e);
+            throw new IllegalStateException("Cannot fetch rating", e);
         }
     }
 }

@@ -1,6 +1,7 @@
 package day01;
 
-import sqlutil.SqlUtil;
+import sqlutil.SqlParam;
+import sqlutil.SqlQuery;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -18,14 +19,15 @@ public class MoviesRepository {
     }
 
     public long insertMovie(String title, LocalDate releaseDate) {
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement stmt = SqlUtil.createParameterizedStatement(connection, Statement.RETURN_GENERATED_KEYS,
-                        "insert into movies(title, release_date) values (?, ?)", title, releaseDate);
-                ResultSet rs = SqlUtil.executeAndGetGeneratedKeys(stmt)
-        ) {
-            if (rs.next()) return rs.getLong(1);
-            throw new IllegalStateException("No key has been generated");
+        try (SqlQuery query = new SqlQuery(dataSource.getConnection())) {
+            query.setStatement(query.connection().prepareStatement(
+                    "insert into movies(title, release_date) values (?, ?)", Statement.RETURN_GENERATED_KEYS));
+            query.statement().setString(1, title);
+            query.statement().setDate(2, Date.valueOf(releaseDate));
+            query.statement().executeUpdate();
+            query.setResult(query.statement().getGeneratedKeys());
+            if (query.result().next()) return query.result().getLong(1);
+            else throw new IllegalStateException("No key has been generated");
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot insert movie", e);
         }
@@ -36,15 +38,15 @@ public class MoviesRepository {
     }
 
     public List<Movie> fetchMoviesByTitle(String title) {
-        return fetchMoviesByParams("select * from movies where title = ?", title);
+        return fetchMoviesByParams("select * from movies where title = ?", SqlParam.of(1, title));
     }
 
     public Optional<Movie> fetchMovieById(long id) {
-        return fetchMovieByParams("select * from movies where id = ?", id);
+        return fetchMovieByParams("select * from movies where id = ?", SqlParam.of(1, id));
     }
 
     public Optional<Movie> fetchMovieByTitle(String title) {
-        return fetchMovieByParams("select * from movies where title = ?", title);
+        return fetchMovieByParams("select * from movies where title = ?", SqlParam.of(1, title));
     }
 
     public long idFromTitle(String title) {
@@ -52,7 +54,7 @@ public class MoviesRepository {
                 .orElseThrow(() -> new IllegalArgumentException("No result")).getId();
     }
 
-    private Optional<Movie> fetchMovieByParams(String sql, Object... params) {
+    private Optional<Movie> fetchMovieByParams(String sql, SqlParam... params) {
         try (ResultSet rs = fetchResultSet(sql, params)) {
             return rs.next() ? Optional.of(processResult(rs)) : Optional.empty();
         } catch (SQLException e) {
@@ -60,7 +62,7 @@ public class MoviesRepository {
         }
     }
 
-    private List<Movie> fetchMoviesByParams(String sql, Object... params) {
+    private List<Movie> fetchMoviesByParams(String sql, SqlParam... params) {
         try (ResultSet rs = fetchResultSet(sql, params)) {
             List<Movie> movies = new ArrayList<>();
             while (rs.next()) movies.add(processResult(rs));
@@ -70,16 +72,13 @@ public class MoviesRepository {
         }
     }
 
-    private ResultSet fetchResultSet(String sql, Object... params) throws SQLException {
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement stmt = SqlUtil.createParameterizedStatement(connection, sql, params)
-        ) {
-            return stmt.executeQuery();
+    private ResultSet fetchResultSet(String sql, SqlParam... params) throws SQLException {
+        try (SqlQuery query = new SqlQuery(dataSource.getConnection())) {
+            query.setStatement(query.connection().prepareStatement(sql));
+            query.setParams(params);
+            return query.statement().executeQuery();
         }
     }
-
-
 
     private Movie processResult(ResultSet rs) throws SQLException {
         return new Movie(

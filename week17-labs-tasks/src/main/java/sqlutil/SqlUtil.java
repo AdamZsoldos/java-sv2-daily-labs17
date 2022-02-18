@@ -59,23 +59,4 @@ public class SqlUtil {
         statement.executeUpdate();
         return statement.getGeneratedKeys();
     }
-
-    public void sendQuery(Connection connection, String sql, Object... params) throws SQLException {
-        try (PreparedStatement stmt = createParameterizedStatement(connection, sql, params)) {
-            stmt.executeUpdate();
-        }
-    }
-
-    public ResultSet fetchQueryResult(Connection connection, String sql, Object... params) throws SQLException {
-        try (PreparedStatement stmt = createParameterizedStatement(connection, sql, params)) {
-            return stmt.executeQuery();
-        }
-    }
-
-    public ResultSet fetchGeneratedKeys(Connection connection, String sql, Object... params) throws SQLException {
-        try (PreparedStatement stmt = createParameterizedStatement(connection, Statement.RETURN_GENERATED_KEYS, sql, params)) {
-            stmt.executeUpdate();
-            return stmt.getGeneratedKeys();
-        }
-    }
 }
