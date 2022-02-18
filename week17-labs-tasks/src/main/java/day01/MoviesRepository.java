@@ -73,9 +73,7 @@ public class MoviesRepository {
     }
 
     private ResultSet fetchResultSet(String sql, SqlParam... params) throws SQLException {
-        try (SqlQuery query = new SqlQuery(dataSource.getConnection())) {
-            query.setStatement(query.connection().prepareStatement(sql));
-            query.setParams(params);
+        try (SqlQuery query = new SqlQuery(dataSource.getConnection(), sql, params)) {
             return query.statement().executeQuery();
         }
     }
