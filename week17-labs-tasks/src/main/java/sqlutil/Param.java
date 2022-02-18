@@ -1,16 +1,16 @@
 package sqlutil;
 
 @SuppressWarnings("java:S6206")
-public class SqlParam {
+public class Param {
 
     private final int index;
     private final Object value;
 
-    public static SqlParam of(int index, Object value) {
-        return new SqlParam(index, value);
+    public static Param of(int index, Object value) {
+        return new Param(index, value);
     }
 
-    private SqlParam(int index, Object value) {
+    private Param(int index, Object value) {
         this.index = index;
         this.value = value;
     }

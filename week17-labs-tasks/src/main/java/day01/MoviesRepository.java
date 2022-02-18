@@ -1,6 +1,6 @@
 package day01;
 
-import sqlutil.SqlParam;
+import sqlutil.Param;
 import sqlutil.SqlQuery;
 
 import javax.sql.DataSource;
@@ -21,7 +21,7 @@ public class MoviesRepository {
     public long insertMovie(String title, LocalDate releaseDate) {
         try (SqlQuery query = new SqlQuery(dataSource.getConnection(),
                 "insert into movies(title, release_date) values (?, ?)", Statement.RETURN_GENERATED_KEYS,
-                SqlParam.of(1, title), SqlParam.of(2, releaseDate))) {
+                Param.of(1, title), Param.of(2, releaseDate))) {
             return query.fetchKeyLong();
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot insert movie", e);
@@ -33,15 +33,15 @@ public class MoviesRepository {
     }
 
     public List<Movie> fetchMoviesByTitle(String title) {
-        return fetchMoviesByParams("select * from movies where title = ?", SqlParam.of(1, title));
+        return fetchMoviesByParams("select * from movies where title = ?", Param.of(1, title));
     }
 
     public Optional<Movie> fetchMovieById(long id) {
-        return fetchMovieByParams("select * from movies where id = ?", SqlParam.of(1, id));
+        return fetchMovieByParams("select * from movies where id = ?", Param.of(1, id));
     }
 
     public Optional<Movie> fetchMovieByTitle(String title) {
-        return fetchMovieByParams("select * from movies where title = ?", SqlParam.of(1, title));
+        return fetchMovieByParams("select * from movies where title = ?", Param.of(1, title));
     }
 
     public long idFromTitle(String title) {
@@ -49,7 +49,7 @@ public class MoviesRepository {
                 .orElseThrow(() -> new IllegalArgumentException("No result")).getId();
     }
 
-    private Optional<Movie> fetchMovieByParams(String sql, SqlParam... params) {
+    private Optional<Movie> fetchMovieByParams(String sql, Param... params) {
         try (ResultSet rs = fetchResultSet(sql, params)) {
             return rs.next() ? Optional.of(processResult(rs)) : Optional.empty();
         } catch (SQLException e) {
@@ -57,7 +57,7 @@ public class MoviesRepository {
         }
     }
 
-    private List<Movie> fetchMoviesByParams(String sql, SqlParam... params) {
+    private List<Movie> fetchMoviesByParams(String sql, Param... params) {
         try (ResultSet rs = fetchResultSet(sql, params)) {
             List<Movie> movies = new ArrayList<>();
             while (rs.next()) movies.add(processResult(rs));
@@ -67,7 +67,7 @@ public class MoviesRepository {
         }
     }
 
-    private ResultSet fetchResultSet(String sql, SqlParam... params) throws SQLException {
+    private ResultSet fetchResultSet(String sql, Param... params) throws SQLException {
         try (SqlQuery query = new SqlQuery(dataSource.getConnection(), sql, params)) {
             return query.statement().executeQuery();
         }
