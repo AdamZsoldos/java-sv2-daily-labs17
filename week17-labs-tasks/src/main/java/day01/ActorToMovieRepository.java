@@ -1,8 +1,9 @@
 package day01;
 
+import sqlutil.Param;
+import sqlutil.SqlQuery;
+
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class ActorToMovieRepository {
@@ -14,13 +15,10 @@ public class ActorToMovieRepository {
     }
 
     public void insertActorAndMovieId(long actorId, long movieId) {
-        try (
-                Connection conn = dataSource.getConnection();
-                PreparedStatement stmt = conn.prepareStatement("insert into actor_to_movie(actor_id, movie_id) values (?, ?)")
-        ) {
-            stmt.setLong(1, actorId);
-            stmt.setLong(2, movieId);
-            stmt.executeUpdate();
+        try (SqlQuery query = new SqlQuery(dataSource.getConnection(),
+                "insert into actor_to_movie(actor_id, movie_id) values (?, ?)",
+                Param.of(1, actorId), Param.of(2, movieId))) {
+            query.statement().executeUpdate();
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot insert", e);
         }
