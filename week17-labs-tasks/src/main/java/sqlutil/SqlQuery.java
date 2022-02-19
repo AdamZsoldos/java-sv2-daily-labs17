@@ -82,6 +82,11 @@ public class SqlQuery implements AutoCloseable {
         this.result = result;
     }
 
+    public int execute() throws SQLException {
+        validateStatementNotNull();
+        return statement.executeUpdate();
+    }
+
     public ResultSet fetch() throws SQLException {
         validateStatementNotNull();
         setResult(statement.executeQuery());
