@@ -68,13 +68,13 @@ public class SqlQuery implements AutoCloseable {
         return statement;
     }
 
+    public ResultSet result() {
+        return result;
+    }
+
     public void setStatement(PreparedStatement statement) throws SQLException {
         if (this.statement != null) this.statement.close();
         this.statement = statement;
-    }
-
-    public ResultSet result() {
-        return result;
     }
 
     public void setResult(ResultSet result) throws SQLException {
