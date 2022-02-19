@@ -41,11 +41,16 @@ public class Main {
         }
         moviesRatingsService.addRatingsByTitle("Great Gatsby", 1, 4);
         System.out.println(moviesRatingsService.getRatingsByTitle("Titanic"));
-        System.out.println(moviesRatingsService.getRatingsByTitle("Great Gatsby"));
+        System.out.println(moviesRatingsService.getAverageRatingById(1));
+        System.out.println(moviesRatingsService.getRatingsById(2));
+        System.out.println(moviesRatingsService.getAverageRatingByTitle("Great Gatsby"));
 
         System.out.println(moviesRepository.fetchMovies());
         System.out.println(actorsRepository.fetchActorByName("Leonardo DiCaprio"));
         System.out.println(actorsRepository.fetchActorByName("Leonardo DiCapri"));
         System.out.println(actorsRepository.findActorsByPrefix("k"));
+
+        System.out.println(actorsMoviesService.getActorsByMovieTitle("Titanic"));
+        System.out.println(actorsMoviesService.getMoviesByActorName("Leonardo DiCaprio"));
     }
 }

@@ -27,6 +27,18 @@ public class ActorsRepository {
         }
     }
 
+    public Optional<Actor> fetchActorById(long id) {
+        try (SqlQuery query = new SqlQuery(dataSource.getConnection(),
+                "SELECT * FROM actors WHERE id = ?", Param.of(1, id))) {
+            if (query.fetch().next()) {
+                return Optional.of(processResult(query.result()));
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot fetch", e);
+        }
+    }
+
     public Optional<Actor> fetchActorByName(String name) {
         try (SqlQuery query = new SqlQuery(dataSource.getConnection(),
                 "SELECT * FROM actors WHERE actor_name = ?", Param.of(1, name))) {

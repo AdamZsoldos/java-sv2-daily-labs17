@@ -28,4 +28,16 @@ public class MoviesRatingsService {
     public List<Integer> getRatingsByTitle(String title) {
         return getRatingsById(moviesRepository.idFromTitle(title));
     }
+
+    public double getAverageRatingById(long movieId) {
+        List<Integer> ratings = getRatingsById(movieId);
+        return ratings.stream()
+                .mapToInt(i -> i)
+                .average()
+                .orElseThrow(() -> new IllegalStateException("No ratings"));
+    }
+
+    public double getAverageRatingByTitle(String title) {
+        return getAverageRatingById(moviesRepository.idFromTitle(title));
+    }
 }

@@ -46,7 +46,8 @@ public class MoviesRepository {
 
     public long idFromTitle(String title) {
         return fetchMovieByTitle(title)
-                .orElseThrow(() -> new IllegalArgumentException("No result")).getId();
+                .orElseThrow(() -> new IllegalArgumentException("No result"))
+                .getId();
     }
 
     private Optional<Movie> fetchMovieByParams(String sql, Param... params) {
