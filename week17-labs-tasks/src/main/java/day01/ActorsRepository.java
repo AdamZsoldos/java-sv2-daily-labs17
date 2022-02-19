@@ -1,5 +1,8 @@
 package day01;
 
+import sqlutil.Param;
+import sqlutil.SqlQuery;
+
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,38 +18,21 @@ public class ActorsRepository {
     }
 
     public long insertActor(String name) {
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(
-                        "INSERT INTO actors (actor_name) VALUES (?)",
-                        Statement.RETURN_GENERATED_KEYS
-                )
-        ) {
-            statement.setString(1, name);
-            statement.executeUpdate();
-            return getGeneratedKeyFromStatement(statement);
+        try (SqlQuery query = new SqlQuery(dataSource.getConnection(),
+                "INSERT INTO actors (actor_name) VALUES (?)", Statement.RETURN_GENERATED_KEYS,
+                Param.of(1, name))) {
+            return query.fetchKeyLong();
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot insert", e);
         }
     }
 
-    private long getGeneratedKeyFromStatement(PreparedStatement statement) throws SQLException {
-        try (ResultSet rs = statement.getGeneratedKeys()) {
-            if (rs.next()) {
-                return rs.getLong(1);
-            }
-            throw new IllegalStateException("No key has been generated");
-        }
-    }
-
     public Optional<Actor> fetchActorByName(String name) {
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM actors WHERE actor_name = ?")
-        ) {
-            statement.setString(1, name);
-            List<Actor> actors = getActorsFromStatement(statement);
-            if (!actors.isEmpty()) return Optional.of(actors.get(0));
+        try (SqlQuery query = new SqlQuery(dataSource.getConnection(),
+                "SELECT * FROM actors WHERE actor_name = ?", Param.of(1, name))) {
+            if (query.fetch().next()) {
+                return Optional.of(processResult(query.result()));
+            }
             return Optional.empty();
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot fetch", e);
@@ -54,29 +40,23 @@ public class ActorsRepository {
     }
 
     public List<Actor> findActorsByPrefix(String prefix) {
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM actors WHERE actor_name LIKE ?")
-        ) {
-            statement.setString(1, prefix + '%');
-            return getActorsFromStatement(statement);
+        try (SqlQuery query = new SqlQuery(dataSource.getConnection(),
+                "SELECT * FROM actors WHERE actor_name LIKE ?", Param.of(1, prefix + "%"))) {
+            query.fetch();
+            List<Actor> actors = new ArrayList<>();
+            while (query.result().next()) {
+                actors.add(processResult(query.result()));
+            }
+            return actors;
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot fetch", e);
         }
     }
 
-    private List<Actor> getActorsFromStatement(PreparedStatement statement) {
-        List<Actor> result = new ArrayList<>();
-        try (ResultSet resultSet = statement.executeQuery()) {
-            while (resultSet.next()) {
-                result.add(new Actor(
-                        resultSet.getLong("id"),
-                        resultSet.getString("actor_name")
-                ));
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Database error", e);
-        }
-        return result;
+    private Actor processResult(ResultSet rs) throws SQLException {
+        return new Actor(
+                rs.getLong("id"),
+                rs.getString("actor_name")
+        );
     }
 }
