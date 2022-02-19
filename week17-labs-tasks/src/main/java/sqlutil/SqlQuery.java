@@ -11,6 +11,8 @@ public class SqlQuery implements AutoCloseable {
     private PreparedStatement statement;
     private ResultSet result;
 
+    // Constructors
+
     public SqlQuery(Connection connection) {
         this.connection = connection;
     }
@@ -60,6 +62,8 @@ public class SqlQuery implements AutoCloseable {
         setParams(params);
     }
 
+    // Getters and setters
+
     public Connection connection() {
         return connection;
     }
@@ -81,6 +85,8 @@ public class SqlQuery implements AutoCloseable {
         if (this.result != null) this.result.close();
         this.result = result;
     }
+
+    // Public methods
 
     public int execute() throws SQLException {
         validateStatementNotNull();
@@ -150,6 +156,8 @@ public class SqlQuery implements AutoCloseable {
         if (statement != null) statement.close();
         if (connection != null) connection.close();
     }
+
+    // Private methods
 
     private void validateStatementNotNull() {
         if (statement == null) {
